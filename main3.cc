@@ -3,10 +3,10 @@
 #include <opencv2/opencv.hpp>
 #include <pangolin/pangolin.h>
 
-#include "./utils.hpp"
-#include "./frame.hpp"
-#include "./tracking.hpp"
-#include "./simulator.hpp"
+#include "utils.hpp"
+#include "frame.hpp"
+#include "tracking.hpp"
+#include "simulator.hpp"
 
 using namespace std;
 

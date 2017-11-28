@@ -51,14 +51,16 @@ include_directories(${BULLET_INCLUDE_DIRS})
 SET(CMAKE_C_FLAGS_RELEASE "-O3  -Wall -Wextra -Wunused-variable  -g -fPIC -msse2 -msse3 -msse4 -ffast-math")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wunused-variable -g -fPIC -msse2 -msse3 -msse4 -ffast-math")
 
+include_directories(${PROJECT_SOURCE_DIR}/src)
+
 add_executable( 
   mmd_ar
   main.cc
-  viewer.cc
-  utils.cc
-  frame.cc
-  tracking.cc
-  simulator.cc
+  src/viewer.cc
+  src/utils.cc
+  src/frame.cc
+  src/tracking.cc
+  src/simulator.cc
   )
 
 target_link_libraries( 
@@ -81,11 +83,11 @@ target_link_libraries(
 add_executable( 
   mmd_ar_simulator
   main2.cc
-  viewer.cc
-  utils.cc
-  frame.cc
-  tracking.cc
-  simulator.cc
+  src/viewer.cc
+  src/utils.cc
+  src/frame.cc
+  src/tracking.cc
+  src/simulator.cc
   )
 
 target_link_libraries( 
@@ -108,11 +110,11 @@ target_link_libraries(
   add_executable( 
     mmd_ar_marker
     main3.cc
-    viewer.cc
-    utils.cc
-    frame.cc
-    tracking.cc
-    simulator.cc
+    src/viewer.cc
+    src/utils.cc
+    src/frame.cc
+    src/tracking.cc
+    src/simulator.cc
     )
   
   target_link_libraries( 
