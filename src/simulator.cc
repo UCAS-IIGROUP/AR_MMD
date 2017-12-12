@@ -63,14 +63,14 @@ cv::Mat Simulator::GenerateWarpedImage(const int &key) {
 void Simulator::UpdateParam(const int &key)
 {
 	if(key == 'x') mf_alpha += ROT_PARAM/180.0*_PI;
-	if(key == 'X') mf_alpha -= ROT_PARAM/180.0*_PI;
+	if(key == 'm') mf_alpha -= ROT_PARAM/180.0*_PI;
 	if(key == 'y') mf_beta += ROT_PARAM/180.0*_PI;
-	if(key == 'Y') mf_beta -= ROT_PARAM/180.0*_PI;
+	if(key == 'n') mf_beta -= ROT_PARAM/180.0*_PI;
 	if(key == 'z') mf_gamma += ROT_PARAM/180.0*_PI;
-	if(key == 'Z') mf_gamma -= ROT_PARAM/180.0*_PI;
+	if(key == 'b') mf_gamma -= ROT_PARAM/180.0*_PI;
 
 	if(key == 't') mf_trans_z += TRANS_PARAM;
-	if(key == 'T') mf_trans_z -= TRANS_PARAM;
+	if(key == 's') mf_trans_z -= TRANS_PARAM;
 	if(key == 'l') mf_trans_u += TRANS_PARAM;
 	if(key == 'h') mf_trans_u -= TRANS_PARAM;
 	if(key == 'j') mf_trans_v += TRANS_PARAM;

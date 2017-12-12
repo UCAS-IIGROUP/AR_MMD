@@ -10,7 +10,7 @@ class Simulator {
     cv::Mat m_image;
     cv::Mat mKf;
 
-    const float TRANS_PARAM = 0.02;
+    const float TRANS_PARAM = 0.01;
     const float ROT_PARAM = 3.0;
 
   public:

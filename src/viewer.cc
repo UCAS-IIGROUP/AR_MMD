@@ -14,7 +14,7 @@ viewer::viewer(int w, int h){
   // write absolute path
   msModelPath = "/home/vaio/Desktop/araisan/araisan.pmx";
   msMMDDataPath = "/home/vaio/Desktop/araisan";
-  msVMDPath = "/home/vaio/Desktop/arau/arau.vmd";
+  msVMDPath = "/home/vaio/Desktop/japari_motion/cham.vmd";
 }
 
 viewer::~viewer(){}
@@ -109,7 +109,7 @@ void viewer::Run(){
 
 /*---------------Load MMD Data*/
 /*Make Pangolin Environment-------------------*/
-  pangolin::CreateWindowAndBind("MMD-AR",mWidth,mHeight);
+  pangolin::CreateWindowAndBind("MMD-AR",mWidth*1.7,mHeight*1.7);
 
   glEnable(GL_DEPTH_TEST);
   glEnable (GL_BLEND);
