@@ -11,6 +11,7 @@ sabaとPangolinの依存はそれぞれのgithub参照．
 `cd ../..`  
 `git clone git@github.com:stevenlovegrove/Pangolin.git`  
 `cd Pangolin && mkdir build && cd build && cmake .. && make -j2`  
+`cd ../..`  
 `mkdir build && cd build`    
 `cmake .. && make`  
 
