@@ -17,12 +17,14 @@ find_package(OpenMP)
 find_package(GLUT)
 find_package(OpenGL)
 find_package(Bullet REQUIRED)
+
+# set you config
 set(Pangolin_DIR "${PROJECT_SOURCE_DIR}/third_party/Pangolin/build/src")
 find_package(Pangolin REQUIRED)
 include_directories(${Pangolin_INCLUDE_DIRS})
 message("[Pngolin include dir] ${Pangolin_INCLUDE_DIRS}")
-find_package(Pangolin REQUIRED)
 
+# set you config
 set(OpenCV_DIR "~/.local/OpenCV33/share/OpenCV")
 find_package(OpenCV REQUIRED)
 IF (OpenCV_FOUND)
@@ -120,7 +122,6 @@ target_link_libraries(
   target_link_libraries( 
     mmd_ar_marker
     ${OpenCV_LIBS}
-    -pthread 
     -lpthread
     -lgomp 
     -fopenmp  
