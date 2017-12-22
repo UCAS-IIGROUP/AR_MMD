@@ -55,18 +55,17 @@ SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -Wextra -Wunused-variable -g -fPIC -msse2
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-add_executable( 
-  mmd_ar
-  main.cc
+add_library(
+  AR_MMD STATIC
   src/viewer.cc
   src/utils.cc
   src/frame.cc
   src/tracking.cc
   src/simulator.cc
-  )
+)
 
 target_link_libraries( 
-  mmd_ar
+  AR_MMD
   ${OpenCV_LIBS}
   -pthread 
   -lpthread
@@ -80,57 +79,34 @@ target_link_libraries(
   ${PROJECT_SOURCE_DIR}/third_party/saba/build/viewer/libSabaViewer.a
   ${PROJECT_SOURCE_DIR}/third_party/saba/build/src/libSaba.a
   ${BULLET_LIBRARIES}
+  )
+
+add_executable( 
+  mmd_ar
+  main.cc
+  )
+
+target_link_libraries( 
+  mmd_ar  
+  AR_MMD
   )
 
 add_executable( 
   mmd_ar_simulator
   main2.cc
-  src/viewer.cc
-  src/utils.cc
-  src/frame.cc
-  src/tracking.cc
-  src/simulator.cc
   )
 
 target_link_libraries( 
   mmd_ar_simulator
-  ${OpenCV_LIBS}
-  -pthread 
-  -lpthread
-  -lgomp 
-  -fopenmp  
-  ${GLUT_LIBRARY} 
-  ${OPENGL_LIBRARY}
-  ${Pangolin_LIBRARIES}
-  ${PROJECT_SOURCE_DIR}/third_party/saba/build/external/lua/liblua.a
-  ${PROJECT_SOURCE_DIR}/third_party/saba/build/external/fcpp/libfcpp.a
-  ${PROJECT_SOURCE_DIR}/third_party/saba/build/viewer/libSabaViewer.a
-  ${PROJECT_SOURCE_DIR}/third_party/saba/build/src/libSaba.a
-  ${BULLET_LIBRARIES}
+  AR_MMD
   )
 
   add_executable( 
     mmd_ar_marker
     main3.cc
-    src/viewer.cc
-    src/utils.cc
-    src/frame.cc
-    src/tracking.cc
-    src/simulator.cc
     )
   
   target_link_libraries( 
     mmd_ar_marker
-    ${OpenCV_LIBS}
-    -lpthread
-    -lgomp 
-    -fopenmp  
-    ${GLUT_LIBRARY} 
-    ${OPENGL_LIBRARY}
-    ${Pangolin_LIBRARIES}
-    ${PROJECT_SOURCE_DIR}/third_party/saba/build/external/lua/liblua.a
-    ${PROJECT_SOURCE_DIR}/third_party/saba/build/external/fcpp/libfcpp.a
-    ${PROJECT_SOURCE_DIR}/third_party/saba/build/viewer/libSabaViewer.a
-    ${PROJECT_SOURCE_DIR}/third_party/saba/build/src/libSaba.a
-    ${BULLET_LIBRARIES}
+    AR_MMD
     )
