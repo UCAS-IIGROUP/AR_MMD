@@ -25,12 +25,7 @@ TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir) {
   mvPatternCorners[2] = cv::Point2f(-target_image.cols / 2.f, target_image.rows / 2.f);
   mvPatternCorners[3] = cv::Point2f(target_image.cols / 2.f, target_image.rows / 2.f);
 
-  prepareCube(); // you can set a scale
   prepareWorldCoordinate(50.f); // you can set a scale
-
-  /*
-  test(); // trivial projection test
-  */
 
   mbDrawCube = false;
   mbEnd = false;
@@ -56,10 +51,12 @@ bool TrackingSystem::checkMarker(cv::Mat& image) {
   cv::aruco::detectMarkers(image.clone(), mpDictionary, markerCorners, markerIDs);
   if(markerIDs.size() == 1) {
     mTargetMarkerID = markerIDs[0];
+    cout << "=========>>> Marker Mode = ON\n";
     return true;
   }
   else {
     mTargetMarkerID = -1;
+    cout << "=========>>> Marker Mode = OFF\n";
     return false;
   }
 }
@@ -93,20 +90,6 @@ void TrackingSystem::calcPose(const cv::Mat& H, cv::Mat& pose)
 
 }
 
-void TrackingSystem::test() {
-  cv::Mat image = mTargetImage.getImage();
-  cv::Point projected_cube_points[8];
-  for(int i = 0; i < 8; i++) {
-    cv::Mat tmp = mK * cv::Mat(mvCubePoints[i]);
-    projected_cube_points[i] = cv::Point{(int)(tmp.at<float>(0)/tmp.at<float>(2)), (int)(tmp.at<float>(1)/tmp.at<float>(2))};
-    cv::circle(image, projected_cube_points[i], 3, cv::Scalar(0,200,0), 2, 8, 0);
-    cout << projected_cube_points[i] << endl;
-  }
-  cv::imshow("projection test", image);
-  cv::waitKey(0);
-  return;
-}
-
 void TrackingSystem::loadCamParams(string dir_name) {
   mK = cv::Mat::eye(3, 3, CV_32FC1); 
   mDist = cv::Mat(4, 1, CV_32FC1); 
@@ -127,18 +110,6 @@ void TrackingSystem::loadCamParams(string dir_name) {
   cout << "========>>> Camera Pramas have been loaded." << endl;
 }
 
-void TrackingSystem::prepareCube(float scale) {
-  for(int i = 0; i < 2; i++) {
-    for(int j = 0; j < 4; j++) {
-      mvCubePoints[i*4 + 0] = cv::Point3f{scale/2.f, scale/2.f, 10.f + scale}; 
-      mvCubePoints[i*4 + 1] = cv::Point3f{-scale/2.f, scale/2.f, 10.f + scale};
-      mvCubePoints[i*4 + 2] = cv::Point3f{-scale/2.f, -scale/2.f, 10.f + scale};
-      mvCubePoints[i*4 + 3] = cv::Point3f{scale/2.f, -scale/2.f, 10.f + scale};
-    }
-  } 
-  return;
-}
-
 void TrackingSystem::prepareWorldCoordinate(float scale) {
   mvWorldCoordinate[0] = cv::Point3f{0.f, 0.f, 0.f}; // origin 
   mvWorldCoordinate[1] = cv::Point3f{scale, 0.f, 0.f}; // x 
@@ -154,16 +125,16 @@ void TrackingSystem::findKeyPointsAndCalcDescriptors(
 {
   //cv::Ptr<cv::FastFeatureDetector> detector=cv::FastFeatureDetector::create();
   if(mask_mode) {
-    double t1 = cv::getTickCount();
+    //double t1 = cv::getTickCount();
     mExtractor -> detectAndCompute( image, mExtractorMask, keypoints, desc );
-    double t2 = cv::getTickCount();
-    double tdet = 1000.0*(t2-t1) / cv::getTickFrequency();
+    //double t2 = cv::getTickCount();
+    //double tdet = 1000.0*(t2-t1) / cv::getTickFrequency();
   }
   else {
-    double t1 = cv::getTickCount();
+    //double t1 = cv::getTickCount();
     mExtractor -> detectAndCompute( image, cv::noArray(), keypoints, desc);
-    double t2 = cv::getTickCount();
-    double tdet = 1000.0*(t2-t1) / cv::getTickFrequency();
+    //double t2 = cv::getTickCount();
+    //double tdet = 1000.0*(t2-t1) / cv::getTickFrequency();
   }
 
   if(false) {
@@ -248,29 +219,9 @@ void TrackingSystem::estimateExtractorMask()
   }
 }
 
-bool TrackingSystem::checkIsInlierEnough( 
-    const cv::Mat& mask, 
-    vector<cv::Point2f>& target_points, 
-    vector<cv::Point2f>& query_points
-    )
+bool TrackingSystem::checkIsInlierEnough(const cv::Mat& mask)
 {
   return mask.rows>10;
-  // vector<cv::Point2f> good_target_points;
-  // vector<cv::Point2f> good_query_points;
-  // int inlier_count = 0;
-  // for(int i = 0; i < mask.rows; i++) {
-  //   if(mask.at<unsigned char>(i)) {
-  //     inlier_count++;
-  //     good_target_points.push_back(target_points[i]);
-  //     good_query_points.push_back(query_points[i]);
-  //   }
-  // }
-  //
-  // target_points.clear(); query_points.clear();
-  // target_points = good_target_points; query_points = good_query_points;
-  //
-  // if(inlier_count > 5) return true;
-  // else return false;
 }
 
 // the main of system
@@ -284,7 +235,7 @@ bool TrackingSystem::run()  // main
   cv::Mat image_viewer = mQueryImage.getImage().clone();
 
   if(mbMarkerMode) {
-    cout << "marker mode" << endl;
+    
   }
   else {
     if(mCount > 5) {
@@ -317,7 +268,7 @@ bool TrackingSystem::run()  // main
       rvec.copyTo(pose.rowRange(0,3).colRange(0,3));
       tvec.copyTo(pose.rowRange(0,3).col(3));
 
-      if(checkIsInlierEnough(mask, target_points, query_points)) {
+      if(checkIsInlierEnough(mask)) {
         // this thread function shows the world coordinates on a captured image
         if(false) {
           thread viewer_th( TrackingSystem::showCoordinate, 
@@ -330,7 +281,6 @@ bool TrackingSystem::run()  // main
                             mvWorldCoordinate
                           );
           viewer_th.detach();
-
       }
         
         mpViewer->SetCamPose(pose);

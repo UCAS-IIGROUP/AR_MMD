@@ -19,7 +19,6 @@ class TrackingSystem {
     int mImageHeight, mImageWidth;
     cv::Mat mK;
     cv::Mat mDist;
-    vector<cv::Point3f> mvCubePoints{8};
     vector<cv::Point3f> mvWorldCoordinate{4};
     vector<cv::Point2f> mvPatternCorners{4};
     /* index 
@@ -56,17 +55,11 @@ class TrackingSystem {
 
     void estimateExtractorMask();
     // this write mEstimatedPatternMask
-    bool checkIsInlierEnough(
-        const cv::Mat& mask, 
-        vector<cv::Point2f>& target_points, 
-        vector<cv::Point2f>& query_points
-        );
+    bool checkIsInlierEnough(const cv::Mat& mask);
     void loadCamParams(string dir_name);
     bool checkMarker(cv::Mat& image);
 
-    void prepareCube(float scale = 10.f);
     void prepareWorldCoordinate(float scale = 1.f);
-    void drawCube();
     void test();
 
     static void showCoordinate(
