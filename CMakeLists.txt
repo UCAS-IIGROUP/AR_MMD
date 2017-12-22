@@ -79,34 +79,34 @@ target_link_libraries(
   ${PROJECT_SOURCE_DIR}/third_party/saba/build/viewer/libSabaViewer.a
   ${PROJECT_SOURCE_DIR}/third_party/saba/build/src/libSaba.a
   ${BULLET_LIBRARIES}
-  )
+)
 
 add_executable( 
   mmd_ar
   main.cc
-  )
+)
 
 target_link_libraries( 
   mmd_ar  
   AR_MMD
-  )
+)
 
 add_executable( 
   mmd_ar_simulator
   main2.cc
-  )
+)
 
 target_link_libraries( 
   mmd_ar_simulator
   AR_MMD
-  )
+)
 
-  add_executable( 
-    mmd_ar_marker
-    main3.cc
-    )
-  
-  target_link_libraries( 
-    mmd_ar_marker
-    AR_MMD
-    )
+add_executable( 
+  mmd_ar_marker
+  main3.cc
+)
+
+target_link_libraries( 
+  mmd_ar_marker
+  AR_MMD
+)

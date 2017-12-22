@@ -28,6 +28,7 @@ class TrackingSystem {
      */
 
     bool mbMarkerMode;
+    int mTargetMarkerID;
     cv::Ptr<cv::aruco::Dictionary> mpDictionary;// = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 
     bool mbDrawCube;
@@ -61,6 +62,7 @@ class TrackingSystem {
         vector<cv::Point2f>& query_points
         );
     void loadCamParams(string dir_name);
+    bool checkMarker(cv::Mat& image);
 
     void prepareCube(float scale = 10.f);
     void prepareWorldCoordinate(float scale = 1.f);
@@ -78,7 +80,7 @@ class TrackingSystem {
         );
 
   public: // function
-    TrackingSystem(cv::Mat& target_image, string calibration_dir, bool marker_mode = false);
+    TrackingSystem(cv::Mat& target_image, string calibration_dir);
     ~TrackingSystem();
     cv::Mat getTargetImage();
     cv::Mat getQueryImage();

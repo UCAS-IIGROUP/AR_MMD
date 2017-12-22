@@ -24,10 +24,10 @@ int main( int argc, char** argv )
 
   TrackingSystem system(target_image, calibration_dir);
 
-  /* for control panel pangolin gui does not work in not main thread(?) */
+  /* ?? Pangolin GUI button works only in main thread ?? */
   pangolin::CreateWindowAndBind("Menu",150,500);
   pangolin::CreatePanel("menu").SetBounds(0.0,1.0,0.0,pangolin::Attach::Pix(150));
-  pangolin::Var<bool> menu_drawcube("menu.Draw ARAI-San",false,true);
+  pangolin::Var<bool> menu_drawcube("menu.Draw MMD",false,true);
   pangolin::Var<bool> menu_end("menu.End",false,false);
 
   glEnable(GL_DEPTH_TEST);
@@ -60,7 +60,7 @@ int main( int argc, char** argv )
     cout << "Operation Time : " << duration << "[sec]\r";
   }
 
-  cout << "=============================" << "The all system has been killed. ByeBye." << endl;
+  cout << "=============================>>> " << "The all system has been killed. ByeBye." << endl;
   return 0;
 }
 

@@ -1,6 +1,6 @@
 #include "./tracking.hpp"
 
-TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir, bool marker_mode) {
+TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir) {
 
   loadCamParams(calibration_dir);
   cv::undistort(target_image.clone(), target_image, mK, mDist);
@@ -8,8 +8,8 @@ TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir, bo
   mExtractor = cv::AKAZE::create();
   // mExtractor = cv::ORB::create();
 
-  mbMarkerMode = marker_mode;
   mpDictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+  mbMarkerMode = checkMarker(target_image);
 
   cv::Mat gray;
   cv::Mat desc;
@@ -47,6 +47,20 @@ void TrackingSystem::setParams(const bool draw_cube, const bool end) {
     mbDrawCube = draw_cube;
     mbEnd = end;
     mpViewer->SetMenuParams(mbDrawCube, mbEnd);
+  }
+}
+
+bool TrackingSystem::checkMarker(cv::Mat& image) {
+  std::vector<int> markerIDs;
+  std::vector<std::vector<cv::Point2f>> markerCorners;
+  cv::aruco::detectMarkers(image.clone(), mpDictionary, markerCorners, markerIDs);
+  if(markerIDs.size() == 1) {
+    mTargetMarkerID = markerIDs[0];
+    return true;
+  }
+  else {
+    mTargetMarkerID = -1;
+    return false;
   }
 }
 
@@ -265,57 +279,71 @@ bool TrackingSystem::run()  // main
   if(mbEnd) {
    return false; 
   }
+
   vector<cv::Point2f> target_points, query_points;
   cv::Mat image_viewer = mQueryImage.getImage().clone();
-  //mpViewer->SetImage(image_viewer);
-  //image_viewer.release();
-  if(mCount > 5) {
-    // using this mask, it deicdes area where extractor calculates key points in stable sequences
-    estimateExtractorMask(); 
+
+  if(mbMarkerMode) {
+    cout << "marker mode" << endl;
   }
-  vector< pair<int,int> > pair_list;
-  if(findMatches2Images(target_points, query_points, pair_list)) {
-
-    vector<cv::Point3f> object_points;
-    for(auto p : target_points) {
-      object_points.push_back(cv::Point3f(p.x - mImageWidth/2, p.y - mImageHeight/2, 0.f));
+  else {
+    if(mCount > 5) {
+      // using this mask, it deicdes area where extractor calculates key points in stable sequences
+      estimateExtractorMask(); 
     }
-    vector<cv::Point2f> image_points = query_points;
-    cv::Mat rvec, tvec;
-    cv::Mat mask;
-    cv::Mat pose = cv::Mat::eye(3, 4, CV_64FC1);
-    if(mvPoseLog.size() == 2) {
-      rvec = mvPoseLog[1].rowRange(0,3).colRange(0,3);
-      tvec = mvPoseLog[1].rowRange(0,3).col(3);
+
+    vector< pair<int,int> > pair_list;
+    if(findMatches2Images(target_points, query_points, pair_list)) {
+
+      vector<cv::Point3f> object_points;
+      for(auto p : target_points) {
+        object_points.push_back(cv::Point3f(p.x - mImageWidth/2, p.y - mImageHeight/2, 0.f));
+      }
+      vector<cv::Point2f> image_points = query_points;
+      cv::Mat rvec, tvec;
+      cv::Mat mask;
+      cv::Mat pose = cv::Mat::eye(3, 4, CV_64FC1);
+      if(mvPoseLog.size() == 2) {
+        rvec = mvPoseLog[1].rowRange(0,3).colRange(0,3);
+        tvec = mvPoseLog[1].rowRange(0,3).col(3);
+        cv::Rodrigues(rvec.clone(), rvec);
+        cv::solvePnPRansac(object_points, image_points, mK, cv::noArray(), rvec, tvec, true, 200, 1.0, 0.999, mask);
+      }
+      else
+        cv::solvePnPRansac(object_points, image_points, mK, cv::noArray(), rvec, tvec, false, 200, 3.0, 0.99, mask);
+
+      assert(pose.type() == rvec.type() and pose.type() == tvec.type()); // 64
       cv::Rodrigues(rvec.clone(), rvec);
-      cv::solvePnPRansac(object_points, image_points, mK, cv::noArray(), rvec, tvec, true, 200, 1.0, 0.999, mask);
-    }
-    else
-      cv::solvePnPRansac(object_points, image_points, mK, cv::noArray(), rvec, tvec, false, 200, 3.0, 0.99, mask);
+      rvec.copyTo(pose.rowRange(0,3).colRange(0,3));
+      tvec.copyTo(pose.rowRange(0,3).col(3));
 
-    assert(pose.type() == rvec.type() and pose.type() == tvec.type()); // 64
-    cv::Rodrigues(rvec.clone(), rvec);
-    rvec.copyTo(pose.rowRange(0,3).colRange(0,3));
-    tvec.copyTo(pose.rowRange(0,3).col(3));
+      if(checkIsInlierEnough(mask, target_points, query_points)) {
+        // this thread function shows the world coordinates on a captured image
+        if(false) {
+          thread viewer_th( TrackingSystem::showCoordinate, 
+                            mQueryImage.getImage(), 
+                            pose, 
+                            mK, 
+                            mvPatternCorners, 
+                            target_points,
+                            query_points,
+                            mvWorldCoordinate
+                          );
+          viewer_th.detach();
 
-    if(checkIsInlierEnough(mask, target_points, query_points)) {
-      // this thread function shows the world coordinates on a captured image
-      if(false) {
-        thread viewer_th( TrackingSystem::showCoordinate, 
-                          mQueryImage.getImage(), 
-                          pose, 
-                          mK, 
-                          mvPatternCorners, 
-                          target_points,
-                          query_points,
-                          mvWorldCoordinate
-                         );
-        viewer_th.detach();
-
-     }
-      
-      mpViewer->SetCamPose(pose);
-      pushCurrentPose2Log(pose);
+      }
+        
+        mpViewer->SetCamPose(pose);
+        pushCurrentPose2Log(pose);
+      }
+      else {
+        // the system has lost
+        // it needs to clear camera pose history 
+        mvPoseLog.clear();
+        mCount = 0;
+        mExtractorMask.release();
+      }
+      mCount++;
     }
     else {
       // the system has lost
@@ -324,14 +352,6 @@ bool TrackingSystem::run()  // main
       mCount = 0;
       mExtractorMask.release();
     }
-    mCount++;
-  }
-  else {
-    // the system has lost
-    // it needs to clear camera pose history 
-    mvPoseLog.clear();
-    mCount = 0;
-    mExtractorMask.release();
   }
   mpViewer->SetImage(image_viewer);
   image_viewer.release();
