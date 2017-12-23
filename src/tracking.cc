@@ -135,6 +135,15 @@ void TrackingSystem::findKeyPointsAndCalcDescriptors(
     //double tdet = 1000.0*(t2-t1) / cv::getTickFrequency();
   }
 
+<<<<<<< HEAD
+=======
+  if(false) {
+    cv::drawKeypoints(image.clone(), keypoints, image, cv::Scalar::all(-1), 
+                  cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    cv::imshow("Viewer", image);
+    cv::waitKey(1);
+  }
+>>>>>>> 310e75e8a81723fcde40e33b921e9edb82cf3fc8
   return;
 }
 
@@ -217,7 +226,7 @@ bool TrackingSystem::checkIsInlierEnough(const cv::Mat& mask)
 }
 
 // the main of system
-bool TrackingSystem::run()  // main
+bool TrackingSystem::run()
 {
   if(mbEnd) {
    return false; 
@@ -400,8 +409,7 @@ int TrackingSystem::findMatches2Images(
 }
 
 void TrackingSystem::shutdown() {
-  //delete mpthread_viewer;
-  //delete mpViewer;
+
 }
 
 TrackingSystem::~TrackingSystem() {

@@ -60,7 +60,6 @@ class TrackingSystem {
     bool checkMarker(cv::Mat& image);
 
     void prepareWorldCoordinate(float scale = 1.f);
-    void test();
 
     static void showCoordinate(
         cv::Mat im, 
