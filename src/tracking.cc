@@ -47,7 +47,7 @@ void TrackingSystem::setParams(const bool draw_cube, const bool end) {
 bool TrackingSystem::checkMarker(cv::Mat& image) {
   std::vector<int> markerIDs;
   std::vector<std::vector<cv::Point2f>> markerCorners;
-  cv::aruco::detectMarkers(image.clone(), mpDictionary, markerCorners, markerIDs);
+  cv::aruco::detectMarkers(image, mpDictionary, markerCorners, markerIDs);
   if(markerIDs.size() == 1) {
     mTargetMarkerID = markerIDs[0];
     cout << "=========>>> Marker Mode = ON\n";
@@ -135,15 +135,6 @@ void TrackingSystem::findKeyPointsAndCalcDescriptors(
     //double tdet = 1000.0*(t2-t1) / cv::getTickFrequency();
   }
 
-<<<<<<< HEAD
-=======
-  if(false) {
-    cv::drawKeypoints(image.clone(), keypoints, image, cv::Scalar::all(-1), 
-                  cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    cv::imshow("Viewer", image);
-    cv::waitKey(1);
-  }
->>>>>>> 310e75e8a81723fcde40e33b921e9edb82cf3fc8
   return;
 }
 
@@ -204,20 +195,6 @@ void TrackingSystem::estimateExtractorMask()
   cv::fillConvexPoly(mask, points, 4, cv::Scalar(255));
   dilate(mask, mExtractorMask, cv::noArray(), cv::Point(-1, -1), 2, 1, 1);
   mExtractorMask = mask.clone();
-
-  if(false) { // debug
-    cv::Mat temp = mQueryImage.getImage();
-    for(int i = 0; i < 4; i++) {
-      cv::Point p{(int)estimatedPatternCorners[i].x, (int)estimatedPatternCorners[i].y};
-      cv::circle(temp, p, 3, cv::Scalar(0,200,0), 2, 8, 0);
-    }
-    cv::line(temp, estimatedPatternCorners[0], estimatedPatternCorners[1], 1, 1, 0);
-    cv::line(temp, estimatedPatternCorners[0], estimatedPatternCorners[2], 1, 1, 0);
-    cv::line(temp, estimatedPatternCorners[1], estimatedPatternCorners[3], 1, 1, 0);
-    cv::line(temp, estimatedPatternCorners[2], estimatedPatternCorners[3], 1, 1, 0);
-    imshow("estimeted", temp);
-    cv::waitKey(1);
-  }
 }
 
 bool TrackingSystem::checkIsInlierEnough(const cv::Mat& mask)
