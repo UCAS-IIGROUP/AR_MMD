@@ -1,9 +1,11 @@
 # AR_MMD
 OpenCVとOpenGLで作ったARプログラム．
 
-MMDを読み込むためのライブラリsaba( https://github.com/benikabocha/saba )とビューアのためのライブラリ( https://github.com/stevenlovegrove/Pangolin )を使っている．  
-
 ## ビルド  
+#### 依存
+Saba - https://github.com/benikabocha/saba  
+Pangolin - https://github.com/stevenlovegrove/Pangolin  
+
 sabaとPangolinの依存はそれぞれのgithub参照．  
 `bash ./build.sh`  
 
