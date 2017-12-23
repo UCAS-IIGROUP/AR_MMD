@@ -60,7 +60,7 @@ int main( int argc, char** argv )
     cout << "Operation Time : " << duration << "[sec]\r";
   }
   cv::destroyWindow("Generator");
-  cout << "=============================" << "The all system has been killed. ByeBye." << endl;
+  cout << "=============================>>> The all system has been killed. ByeBye." << endl;
   return 0;
 }
 

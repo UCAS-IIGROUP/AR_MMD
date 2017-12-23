@@ -66,9 +66,6 @@ class TrackingSystem {
         cv::Mat im, 
         cv::Mat pose, 
         cv::Mat K,
-        vector<cv::Point2f> corner_points,
-        vector<cv::Point2f> target_points,
-        vector<cv::Point2f> query_points,
         vector<cv::Point3f> world_coordinate_points
         );
 

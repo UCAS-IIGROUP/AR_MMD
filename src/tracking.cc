@@ -6,7 +6,6 @@ TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir) {
   cv::undistort(target_image.clone(), target_image, mK, mDist);
 
   mExtractor = cv::AKAZE::create();
-  // mExtractor = cv::ORB::create();
 
   mpDictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
   mbMarkerMode = checkMarker(target_image);
@@ -123,7 +122,6 @@ void TrackingSystem::findKeyPointsAndCalcDescriptors(
     cv::Mat& desc, bool mask_mode
     )
 {
-  //cv::Ptr<cv::FastFeatureDetector> detector=cv::FastFeatureDetector::create();
   if(mask_mode) {
     //double t1 = cv::getTickCount();
     mExtractor -> detectAndCompute( image, mExtractorMask, keypoints, desc );
@@ -137,12 +135,6 @@ void TrackingSystem::findKeyPointsAndCalcDescriptors(
     //double tdet = 1000.0*(t2-t1) / cv::getTickFrequency();
   }
 
-  if(false) {
-    cv::drawKeypoints(image.clone(), keypoints, image, cv::Scalar::all(-1), 
-                  cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-    cv::imshow("Viewer", image);
-    int key = cv::waitKey(1);
-  }
   return;
 }
 
@@ -275,9 +267,6 @@ bool TrackingSystem::run()  // main
                             mQueryImage.getImage(), 
                             pose, 
                             mK, 
-                            mvPatternCorners, 
-                            target_points,
-                            query_points,
                             mvWorldCoordinate
                           );
           viewer_th.detach();
@@ -313,9 +302,6 @@ void TrackingSystem::showCoordinate(
                       cv::Mat im, 
                       cv::Mat pose, 
                       cv::Mat K,
-                      vector<cv::Point2f> corner_points,
-                      vector<cv::Point2f> target_points,
-                      vector<cv::Point2f> query_points,
                       vector<cv::Point3f> world_coordinate_points
                       ) 
 {
@@ -371,7 +357,7 @@ int TrackingSystem::findMatches2Images(
   {
     vector<int> matches_12(kp1.size(), -1);
     vector<int> matches_21(kp2.size(), -1);
-    for(int i = 0; i < matches_2nn_12.size(); i++) { // i is queryIdx
+    for(size_t i = 0; i < matches_2nn_12.size(); i++) { // i is queryIdx
       if( matches_2nn_12[i][0].distance/matches_2nn_12[i][1].distance < ratio 
           and 
           matches_2nn_21[matches_2nn_12[i][0].trainIdx][0].distance 
