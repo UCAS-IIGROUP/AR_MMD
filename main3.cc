@@ -40,7 +40,7 @@ int main( int argc, char** argv )
   while(1)
   {
     cv::imshow("Generator", image);
-    int key = cv::waitKey(50);
+    int key = cv::waitKey(30);
     image = simulator.GenerateWarpedImage(key);
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
     system.setParams(menu_drawcube, menu_end);

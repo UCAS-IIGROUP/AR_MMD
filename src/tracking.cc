@@ -47,7 +47,16 @@ void TrackingSystem::setParams(const bool draw_cube, const bool end) {
 bool TrackingSystem::checkMarker(cv::Mat& image) {
   std::vector<int> markerIDs;
   std::vector<std::vector<cv::Point2f>> markerCorners;
-  cv::aruco::detectMarkers(image, mpDictionary, markerCorners, markerIDs);
+  cv::Mat cambus(cv::Size(image.cols+100, image.rows+100), CV_8UC3);
+  cv::Mat roi(cambus, cv::Rect(50, 50, image.cols, image.rows));
+  image.copyTo(roi);
+  for(int i = 0; i < cambus.rows; i++) {
+    for(int j = 0; j < cambus.cols; j++) {
+      if(i<50 or j<50 or j>cambus.cols-50 or i>cambus.rows-50)
+        cambus.at<cv::Vec3b>(i, j) = cv::Vec3b(255,255,255);
+    }
+  }
+  cv::aruco::detectMarkers(cambus, mpDictionary, markerCorners, markerIDs);
   if(markerIDs.size() == 1) {
     mTargetMarkerID = markerIDs[0];
     cout << "=========>>> Marker Mode = ON\n";
@@ -58,35 +67,6 @@ bool TrackingSystem::checkMarker(cv::Mat& image) {
     cout << "=========>>> Marker Mode = OFF\n";
     return false;
   }
-}
-
-// this is not used and probably incorrect
-void TrackingSystem::calcPose(const cv::Mat& H, cv::Mat& pose)
-{
-  pose = cv::Mat::eye(3, 4, CV_64FC1); //3x4 matrix
-  float norm1 = (float)norm(H.col(0)); 
-  float norm2 = (float)norm(H.col(1));
-  float tnorm = (norm1 + norm2) / 2.0f;
-
-  cv::Mat v1 = H.col(0);
-
-  cv::normalize(v1.clone(), v1); // Normalize the rotation
-  v1.copyTo(pose.col(0));
-
-  v1.release();
-  v1 = H.col(1);
-
-  cv::normalize(v1.clone(), v1);
-  v1.copyTo(pose.col(1));
-
-  v1.release();
-  v1 = pose.col(0);
-  cv::Mat v2 = pose.col(1);
-
-  cv::Mat v3 = v1.cross(v2);  //Computes the cross-product of v1 and v2
-  v3.copyTo(pose.col(2));      
-  pose.col(3) = H.col(2) / tnorm; //vector t [R|t]
-
 }
 
 void TrackingSystem::loadCamParams(string dir_name) {
@@ -213,7 +193,45 @@ bool TrackingSystem::run()
   cv::Mat image_viewer = mQueryImage.getImage().clone();
 
   if(mbMarkerMode) {
+    std::vector<int> markerIDs;
+    std::vector<std::vector<cv::Point2f>> markerCorners;
+    cv::aruco::detectMarkers(image_viewer, mpDictionary,
+                             markerCorners, markerIDs);
+
+    std::vector<cv::Vec3d> rvecs, tvecs;
+    cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.1, mK, 
+                                         mDist, rvecs, tvecs);
     
+    cv::Mat rvec, tvec;
+    rvec.release(); tvec.release();
+    if(markerIDs.size() > 0) {
+      for(size_t i = 0; i < markerIDs.size(); i++) {
+        if(markerIDs[i] == mTargetMarkerID) {
+          rvec = rvecs[i];
+          tvec = tvecs[i];
+        }
+      }
+    }
+    else {
+      // target marker is not deteted !
+      return true;
+    }
+
+    if(tvec.empty()) {
+      return true;
+    }
+
+    cv::Mat pose = cv::Mat::eye(3, 4, CV_64FC1);
+    cv::Rodrigues(rvec.clone(), rvec);
+    rvec.copyTo(pose.rowRange(0,3).colRange(0,3));
+    tvec.copyTo(pose.rowRange(0,3).col(3));
+
+    cout << pose << endl;
+    
+    mpViewer->SetCamPose(pose);
+    mpViewer->SetImage(image_viewer);
+
+    return true;
   }
   else {
     if(mCount > 5) {

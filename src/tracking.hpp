@@ -46,8 +46,6 @@ class TrackingSystem {
 
     void pushCurrentPose2Log(cv::Mat& pose);
 
-    static void calcPose(const cv::Mat& H, cv::Mat& pose);
-
     int findMatches2Images( 
         vector<cv::Point2f>& target_points,
         vector<cv::Point2f>& query_points,
