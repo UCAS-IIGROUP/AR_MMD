@@ -213,18 +213,16 @@ bool TrackingSystem::run()
                              markerCorners, markerIDs);
 
     std::vector<cv::Vec3d> rvecs, tvecs;
-    cv::aruco::estimatePoseSingleMarkers(markerCorners, 600, mK, 
+    cv::aruco::estimatePoseSingleMarkers(markerCorners, 500, mK, 
                                          mDist, rvecs, tvecs);
     
     cv::Mat rvec, tvec;
     rvec.release(); tvec.release();
     if(markerIDs.size() > 0) {
-      cout << "detected" << markerIDs[0] << endl;
-      cout << mTargetMarkerID << endl;
       for(size_t i = 0; i < markerIDs.size(); i++) {
         if(markerIDs[i] == mTargetMarkerID) {
-          rvec = rvecs[i];
-          tvec = tvecs[i];
+          rvec = cv::Mat(rvecs[i]);
+          tvec = cv::Mat(tvecs[i]);
         }
       }
     }
@@ -239,8 +237,13 @@ bool TrackingSystem::run()
       return true;
     }
 
+    cv::Mat arrangeRotation = (cv::Mat_<double>(3,3) << -1.0,0.0,0.0,
+                                                        0.0,-1.0,0.0,
+                                                        0.0,0.0,-1.0);
+
     cv::Mat pose = cv::Mat::eye(3, 4, CV_64FC1);
     cv::Rodrigues(rvec.clone(), rvec);
+    rvec = arrangeRotation * rvec.clone();
     rvec.copyTo(pose.rowRange(0,3).colRange(0,3));
     tvec.copyTo(pose.rowRange(0,3).col(3));
 
