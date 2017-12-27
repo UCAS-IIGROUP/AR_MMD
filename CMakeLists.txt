@@ -83,7 +83,7 @@ target_link_libraries(
 
 add_executable( 
   mmd_ar
-  main.cc
+  mmd_ar.cc
 )
 
 target_link_libraries( 
@@ -93,7 +93,7 @@ target_link_libraries(
 
 add_executable( 
   mmd_ar_simulator
-  main2.cc
+  mmd_ar_simulator.cc
 )
 
 target_link_libraries( 
@@ -101,12 +101,3 @@ target_link_libraries(
   AR_MMD
 )
 
-add_executable( 
-  mmd_ar_marker
-  main3.cc
-)
-
-target_link_libraries( 
-  mmd_ar_marker
-  AR_MMD
-)
