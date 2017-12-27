@@ -1,10 +1,13 @@
 # AR_MMD
-OpenCVとOpenGLで作ったARプログラム．
+OpenCVとOpenGLで作ったMMD用ARプログラム．  
 
 ## ビルド  
-`bash ./build.sh`  
+OpenCV(>3.1)とOpenCV_contrib(>3.1)をインストールしてから以下のコマンド．  
+`bash ./build.sh`  
 
 #### 依存
+OpenCV - https://github.com/opencv/opencv  
+OpenCV_contrib - https://github.com/opencv/opencv_contrib  
 Saba - https://github.com/benikabocha/saba  
 Pangolin - https://github.com/stevenlovegrove/Pangolin  
 
@@ -13,8 +16,15 @@ Pangolin - https://github.com/stevenlovegrove/Pangolin
 `./mmd_ar [target image(../target_marker.jpg)] [calibration folder(../calibration_empty)] # マーカーモード` 
 `./mmd_ar_simulator [target image(../target_example.jpg)] [calibration folder(../calibration_empty)] # シミュレータモード` 
 
+
+### おまけ  
+カメラキャプチャ  
+`python3 cap.py`  
+
 ### 作りかけ  
 １. 特徴点ベースは遅いので別な平面追跡アルゴリズム（画像の勾配情報を使うような）を検討中
 
+
 ### 注意
 mmd_ar_simulatorのターゲットにARマーカーを指定しても現在は動作しない．  
+
