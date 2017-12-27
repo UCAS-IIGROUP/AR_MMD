@@ -33,7 +33,7 @@ int main( int argc, char** argv )
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  cv::VideoCapture cap(1);
+  cv::VideoCapture cap(1);  //  set your camera device id 
   if(!cap.isOpened())
   {
     cout << "Failed to open camera device" << endl;
