@@ -34,15 +34,30 @@ int main( int argc, char** argv )
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  Simulator simulator(target_image);
-  cv::Mat image = target_image.clone();
+  cv::VideoCapture cap(1);
+  if(!cap.isOpened())
+  {
+    cout << "Failed to open camera device" << endl;
+    return -1;
+  }
 
+  // for safety
+  for(int i = 0; i < 10; i++) {
+    cv::Mat m;
+    cap >> m;
+  }
+  
   while(1)
   {
-    cv::imshow("Generator", image);
-    int key = cv::waitKey(30);
-    image = simulator.GenerateWarpedImage(key);
     std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
+
+    cv::Mat image;
+    cap >> image;
+
+    if(image.empty()) {
+      continue;
+    }
+  
     system.setParams(menu_drawcube, menu_end);
     system.setQueryImage(image);
 

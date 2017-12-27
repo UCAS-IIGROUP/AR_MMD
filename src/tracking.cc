@@ -16,8 +16,13 @@ TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir) {
   cv::cvtColor(target_image, gray,CV_RGB2GRAY);
   findKeyPointsAndCalcDescriptors(gray, keypoints, desc);
   mTargetImage = Frame(target_image, desc, keypoints);
-  mImageHeight = target_image.rows;
-  mImageWidth = target_image.cols;
+
+/*
+  if(mbMarkerMode) {
+    mImageHeight = target_image.rows;
+    mImageWidth = target_image.cols;
+  }
+*/
 
   mvPatternCorners[0] = cv::Point2f(-target_image.cols / 2.f, -target_image.rows / 2.f);
   mvPatternCorners[1] = cv::Point2f(target_image.cols/2.f, -target_image.rows / 2.f);
@@ -30,7 +35,7 @@ TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir) {
   mbEnd = false;
 
   mCount = 0;
-  mpViewer = new viewer(target_image.cols, target_image.rows);
+  mpViewer = new viewer(mImageWidth, mImageHeight);
   mpthread_viewer = new std::thread(&viewer::Run, mpViewer);
   cout << "========>>> The system has launced now." << endl;
   return;
@@ -85,6 +90,15 @@ void TrackingSystem::loadCamParams(string dir_name) {
     string tmp;
     ifs2 >> tmp;
     mDist.at<float>(i) = stof(tmp);
+  }
+  std::ifstream ifs3(dir_name + "/param.txt");
+  for(int i = 0; i < 2; i++) {
+    string tmp;
+    ifs3 >> tmp;
+    if(i==0)
+      mImageWidth = stoi(tmp);
+    else if(i==1)
+      mImageHeight = stoi(tmp);
   }
   cout << "========>>> Camera Pramas have been loaded." << endl;
 }
@@ -199,12 +213,14 @@ bool TrackingSystem::run()
                              markerCorners, markerIDs);
 
     std::vector<cv::Vec3d> rvecs, tvecs;
-    cv::aruco::estimatePoseSingleMarkers(markerCorners, 0.1, mK, 
+    cv::aruco::estimatePoseSingleMarkers(markerCorners, 600, mK, 
                                          mDist, rvecs, tvecs);
     
     cv::Mat rvec, tvec;
     rvec.release(); tvec.release();
     if(markerIDs.size() > 0) {
+      cout << "detected" << markerIDs[0] << endl;
+      cout << mTargetMarkerID << endl;
       for(size_t i = 0; i < markerIDs.size(); i++) {
         if(markerIDs[i] == mTargetMarkerID) {
           rvec = rvecs[i];
@@ -214,10 +230,12 @@ bool TrackingSystem::run()
     }
     else {
       // target marker is not deteted !
+      mpViewer->SetImage(image_viewer);
       return true;
     }
 
     if(tvec.empty()) {
+      mpViewer->SetImage(image_viewer);
       return true;
     }
 
@@ -226,8 +244,6 @@ bool TrackingSystem::run()
     rvec.copyTo(pose.rowRange(0,3).colRange(0,3));
     tvec.copyTo(pose.rowRange(0,3).col(3));
 
-    cout << pose << endl;
-    
     mpViewer->SetCamPose(pose);
     mpViewer->SetImage(image_viewer);
 

@@ -11,8 +11,7 @@ class TrackingSystem {
   private: // variable
     Frame mTargetImage;
     Frame mQueryImage;
-    cv::Ptr<cv::AKAZE> mExtractor;// = cv::AKAZE::create();
-    // cv::Ptr<cv::ORB> mExtractor;// = cv::AKAZE::create();
+    cv::Ptr<cv::AKAZE> mExtractor;
     vector<cv::Mat> mvPoseLog;
     long int mCount;
     cv::Mat mExtractorMask;
