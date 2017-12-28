@@ -17,13 +17,6 @@ TrackingSystem::TrackingSystem(cv::Mat& target_image, string calibration_dir) {
   findKeyPointsAndCalcDescriptors(gray, keypoints, desc);
   mTargetImage = Frame(target_image, desc, keypoints);
 
-/*
-  if(mbMarkerMode) {
-    mImageHeight = target_image.rows;
-    mImageWidth = target_image.cols;
-  }
-*/
-
   mvPatternCorners[0] = cv::Point2f(-target_image.cols / 2.f, -target_image.rows / 2.f);
   mvPatternCorners[1] = cv::Point2f(target_image.cols/2.f, -target_image.rows / 2.f);
   mvPatternCorners[2] = cv::Point2f(-target_image.cols / 2.f, target_image.rows / 2.f);
