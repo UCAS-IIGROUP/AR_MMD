@@ -26,7 +26,8 @@ Pangolin - https://github.com/stevenlovegrove/Pangolin
 
 ### 作りかけ  
 １. 特徴点ベースは遅いので別な平面追跡アルゴリズム（画像の勾配情報を使うような）を検討中
-
+２．mmd_ar_simulatorでもマーカーモードが使えるようにする．
+３．MMDモデル描画の改善．
 
 ### 注意
 mmd_ar_simulatorのターゲットにARマーカーを指定しても現在は動作しない．  
