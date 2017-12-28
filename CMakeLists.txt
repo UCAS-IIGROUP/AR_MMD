@@ -100,4 +100,3 @@ target_link_libraries(
   mmd_ar_simulator
   AR_MMD
 )
-
