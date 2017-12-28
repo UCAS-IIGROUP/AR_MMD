@@ -13,8 +13,11 @@ Pangolin - https://github.com/stevenlovegrove/Pangolin
 
 ## 使い方  
 `./mmd_ar [target image(../target_example.jpg)] [calibration folder(../calibration_empty)]`  
-`./mmd_ar [target image(../target_marker.jpg)] [calibration folder(../calibration_empty)] # マーカーモード` 
-`./mmd_ar_simulator [target image(../target_example.jpg)] [calibration folder(../calibration_empty)] # シミュレータモード` 
+`./mmd_ar [target image] [calibration folder] # マーカーモード`  
+`./mmd_ar_simulator [target image] [calibration folder] # シミュレータモード`  
+
+#### キャリブレーション
+`d_param.txt`には歪みパラメータを，`k_param.txt`にはカメラの内部パラメータを入れておく．`param.txt`にはARシステムに与える入力画像の横幅と高さを入れておく．形式はリポジトリの`calibration_empty`フォルダにある各ファイルを参照．
 
 
 ### おまけ  
