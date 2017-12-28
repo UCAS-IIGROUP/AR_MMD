@@ -21,12 +21,14 @@ Pangolin - https://github.com/stevenlovegrove/Pangolin
 
 
 ### おまけ  
-カメラキャプチャ  
-`python3 cap.py`  
+カメラキャプチャ   
+`python cap.py`  
+カメラキャリブレーション  
+`python camera_calibration.py`  
 
 ### 作りかけ  
-１. 特徴点ベースは遅いので別な平面追跡アルゴリズム（画像の勾配情報を使うような）を検討中
-３．MMDモデル描画の改善．  
+1. 特徴点ベースは遅いので別な平面追跡アルゴリズム（画像の勾配情報を使うような）を検討中  
+2. MMDモデル描画の改善．  
 
 ### 注意
 mmd_ar_simulatorのターゲットにARマーカーを指定しても現在は動作しない．  
