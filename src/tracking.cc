@@ -247,7 +247,7 @@ bool TrackingSystem::run()
   }
   else {
     if(mCount > 5) {
-      // using this mask, it deicdes area where extractor calculates key points in stable sequences
+      // using this mask, it deicdes area where extractor calculates key points in stable sequences 
       estimateExtractorMask(); 
     }
 
@@ -266,12 +266,13 @@ bool TrackingSystem::run()
         rvec = mvPoseLog[1].rowRange(0,3).colRange(0,3);
         tvec = mvPoseLog[1].rowRange(0,3).col(3);
         cv::Rodrigues(rvec.clone(), rvec);
-        cv::solvePnPRansac(object_points, image_points, mK, cv::noArray(), rvec, tvec, true, 200, 1.0, 0.999, mask);
+        cv::solvePnPRansac(object_points, image_points, mK, cv::noArray(), rvec, tvec, true, 120, 1.0, 0.999, mask);
       }
       else
         cv::solvePnPRansac(object_points, image_points, mK, cv::noArray(), rvec, tvec, false, 200, 3.0, 0.99, mask);
 
       assert(pose.type() == rvec.type() and pose.type() == tvec.type()); // 64
+      
       cv::Rodrigues(rvec.clone(), rvec);
       rvec.copyTo(pose.rowRange(0,3).colRange(0,3));
       tvec.copyTo(pose.rowRange(0,3).col(3));
