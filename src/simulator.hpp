@@ -6,15 +6,18 @@
 
 class Simulator {
   private:
-    float mf_alpha, mf_beta, mf_gamma, mf_trans_u, mf_trans_v, mf_trans_z; 
-    cv::Mat m_image;
+    float mfAlpha, mfBeta, mfGamma, mfTransX, mfTransY, mfTransZ; 
+    cv::Mat mmImage;
     cv::Mat mKf;
+    
+    const cv::Size mCanvasSize;
 
-    const float TRANS_PARAM = 0.01;
-    const float ROT_PARAM = 3.0;
+    const float mfTRANS_PARAM = 0.01;
+    const float mfROT_PARAM = 1.0;
 
   public:
     Simulator(cv::Mat& image);
+    Simulator(cv::Mat& image, cv::Size canvasSize);
     cv::Mat GenerateWarpedImage(const int &key);
     void UpdateParam(const int &key);
 };
