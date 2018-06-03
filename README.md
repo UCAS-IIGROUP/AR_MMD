@@ -33,3 +33,5 @@ Pangolin - https://github.com/stevenlovegrove/Pangolin
 ### 注意
 mmd_ar_simulatorのターゲットにARマーカーを指定しても現在は動作しない．  
 
+### Demo
+https://www.youtube.com/watch?v=UmBR0Bx28Po
